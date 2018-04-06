@@ -1,0 +1,256 @@
+" vim: set foldmethod=marker:
+syntax on
+filetype plugin indent on
+" Plugins
+" Vundle plugins {{{
+set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/vim-orgmode
+
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+" Status bar
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+" Color scheme
+Plugin 'atelierbram/Base2Tone-vim'   
+"Plugin 'guns/xterm-color-table.vim'
+"Plugin 'challenger-deep-theme/vim'
+" Focus
+Plugin 'junegunn/goyo.vim'
+Plugin 'junegunn/limelight.vim'
+" git
+Plugin 'tpope/vim-fugitive'
+" Plugin 'airblade/vim-gitgutter'
+" tmux integration
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'christoomey/vim-tmux-runner'
+Plugin 'tmux-plugins/vim-tmux-focus-events'
+Plugin 'keith/tmux.vim'
+" Code navigation
+Plugin 'majutsushi/tagbar' 
+Plugin 'mhinz/vim-grepper' 
+Plugin 'ctrlpvim/ctrlp.vim.git' 
+if has("nvim")
+Plugin 'w0rp/ale'
+else
+Plugin 'vim-syntastic/syntastic'
+Plugin 'mtscout6/syntastic-local-eslint.vim'
+endif
+Plugin 'chrisbra/Colorizer'
+" XCode
+Plugin 'gfontenot/vim-xcode'
+Plugin 'ybian/smartim'
+" File types
+Plugin 'keith/swift.vim'
+Plugin 'msanders/cocoa.vim'
+Plugin 'tikhomirov/vim-glsl'
+Plugin 'darfink/vim-plist'
+Plugin 'pangloss/vim-javascript'
+Plugin 'lervag/vimtex'
+" Snippets
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+" NVIM
+if has("nvim")
+Plugin 'mitsuse/autocomplete-swift'
+" Plugin 'zchee/deoplete-clang'
+Plugin 'machakann/vim-highlightedyank'
+endif
+Plugin 'junegunn/vim-easy-align'
+Plugin 'jceb/vim-orgmode'
+Plugin 'tpope/vim-speeddating'
+
+
+"Plugin 'jceb/vim-orgmode'
+call vundle#end()
+" }}}
+
+if has("nvim")
+let g:deoplete#enable_at_startup = 1
+
+autocmd FileType swift imap <buffer> <C-k> <Plug>(autocomplete_swift_jump_to_placeholder)
+endif
+" Appearance
+" Color scheme {{{
+colorscheme Base2Tone_DrawbridgeDark
+
+"hi Normal ctermbg=233
+"
+if exists('$TMUX')
+    "hi Normal ctermbg=none
+endif
+" }}}
+" Status bar {{{
+let g:airline_theme = "base16"           
+let g:airline_powerline_fonts=0          
+let g:airline_detect_paste=1             
+let g:airline_right_sep=''               
+let g:airline_left_sep=''                
+let g:airline_right_alt_sep='|'          
+let g:airline_left_alt_sep='|'           
+" Airline inactive mode
+ let s:cterm_inactivebg = 235 " Background for inactive mode
+ let s:gui_inactivebg   = '#1C1C1C'
+ let s:cterm_inactivefg = 239 " Foreground for inactive mode
+ let s:gui_inactivefg   = '#4E4E4E'
+let s:IA1 = [s:gui_inactivefg, s:gui_inactivebg, s:cterm_inactivefg, s:cterm_inactivebg, '']
+let s:IA2 = [s:gui_inactivefg, s:gui_inactivebg, s:cterm_inactivefg, s:cterm_inactivebg, '']
+let s:IA3 = [s:gui_inactivefg, s:gui_inactivebg, s:cterm_inactivefg, s:cterm_inactivebg, '']
+"let g:airline#themes#minimalist#palette.inactive = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3)
+hi TabLineFill ctermbg=None
+hi TabLineSel ctermbg=None cterm=Underline
+hi TabLine ctermbg=None
+
+"}}}
+" Highlight overlength {{{
+highlight ColorColumn ctermbg=234                    
+highlight OverLength ctermbg=234
+match OverLength /\%81v.\+/                          
+set colorcolumn=80                                   
+
+"}}}
+" Highlight current line & column {{{
+au FocusLost * hi Normal ctermbg=NONE
+au FocusGained * hi CursorLine   cterm=NONE ctermbg=235
+au FocusGained * hi CursorLineNR cterm=NONE ctermbg=235
+"u FocusGained * hi CursorColumn cterm=NONE ctermbg=235
+au FocusLost * hi CursorLine   cterm=NONE ctermbg=233
+au FocusLost * hi CursorLineNR cterm=NONE ctermbg=233
+au FocusLost * hi CursorColumn cterm=NONE ctermbg=233
+hi CursorLine   cterm=NONE ctermbg=235
+hi CursorLineNR   cterm=NONE ctermbg=235
+set nocuc
+highlight Folded cterm=underline ctermbg=NONE
+
+augroup BgHighlight
+    autocmd!
+    autocmd WinEnter * set colorcolumn=80
+    autocmd WinLeave * set colorcolumn=0
+    autocmd WinEnter * set cul
+    autocmd WinLeave * set nocul
+    "utocmd WinEnter * set cuc
+    "utocmd WinLeave * set nocuc
+augroup END
+"}}}
+" Line number column {{{
+highlight SignColumn ctermbg=NONE
+highlight LineNr ctermbg=NONE
+
+" GIT
+set updatetime=250
+highlight GitGutterAdd ctermfg=2 ctermbg=234
+highlight GitGutterChange ctermfg=11 ctermbg=234
+highlight GitGutterDelete ctermfg=9 ctermbg=234
+highlight GitGutterChangeDelete ctermfg=13 ctermbg=234
+
+"}}}
+" Separator{{{
+set fillchars+=vert:│
+hi VertSplit ctermbg=NONE guibg=NONE"}}}
+" Sytastic {{{
+set timeoutlen=1000 ttimeoutlen=0
+
+
+
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\   'swift': ['swiftlint'],
+\}
+let g:ale_javascript_eslint_executable = 'eslint'
+let g:airline#extensions#ale#enabled = 1
+
+
+let g:ycm_semantic_triggers = {
+ \ 'objc' : ['re!\@"\.*"\s',
+ \ 're!\@\w+\.*\w*\s',
+ \ 're!\@\(\w+\.*\w*\)\s',
+ \ 're!\@\(\s*',
+ \ 're!\@\[.*\]\s',
+ \ 're!\@\[\s*',
+ \ 're!\@\{.*\}\s',
+ \ 're!\@\{\s*',
+ \ "re!\@\’.*\’\s",
+ \ '#ifdef ',
+ \ 're!:\s*',
+ \ 're!=\s*',
+ \ 're!,\s*', ],
+ \ }
+"}}}
+" Autocmds {{{
+augroup filetypedetect
+    au BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
+augroup END
+autocmd BufNewFile,BufRead *.js set shiftwidth=2
+autocmd BufNewFile,BufRead *.html set shiftwidth=2
+autocmd BufNewFile,BufRead *.scss set shiftwidth=2 
+au BufReadPost *.hbs set syntax=html
+autocmd! BufNewFile,BufRead *.fsh,*.vsh set filetype=glsl
+"}}}
+" Mac / XCode{{{
+let g:smartim_default = 'com.apple.keylayout.Canadian'
+let g:xcode_runner_command = 'VtrSendCommandToRunner! {cmd}'
+let g:vim_pbcopy_local_cmd = "pbcopy"
+"}}}
+" Javascript
+augroup javascript_folding
+    au!
+    au FileType javascript setlocal foldmethod=syntax
+  augroup END
+let g:javascript_conceal_function             = "ƒ"
+let g:javascript_conceal_null                 = "ø"
+let g:javascript_conceal_this                 = "@"
+let g:javascript_conceal_return               = "⇚"
+let g:javascript_conceal_undefined            = "¿"
+let g:javascript_conceal_NaN                  = "ℕ"
+let g:javascript_conceal_prototype            = "¶"
+let g:javascript_conceal_static               = "•"
+let g:javascript_conceal_super                = "Ω"
+let g:javascript_conceal_arrow_function       = "⇒"
+"set conceallevel=1
+"
+" Snippets{{{
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+set runtimepath+="~/.vim/my_snippets"
+let g:UltiSnipsSnippetDirectories=["UltiSnips", "my_snippets"]
+"}}}
+" LaTeX
+let g:vimtex_view_general_viewer = 'open'
+let g:vimtex_view_general_options = '-a Preview'
+let g:vimtex_latexmk_options = '-pdf  -verbose -file-line-error -synctex=1 -interaction=nonstopmode'
+
+" CtrlP
+set wildignore+=*/tmp/*,*/node_modules/*,*.so,*.swp,*.zip,*/vendor/*,*/\.git/*
+
+" Grepper
+map <C-F> :Grepper<CR>
+
+"
+set termguicolors
+set autoindent
+set hlsearch
+set number
+set smartindent
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set cursorline
+set scrolloff=3 " Keep 3 lines below and above the cursor
+set mouse=a
+set mouse+=a
+if &term =~ '^screen'
+    " tmux knows the extended mouse mode
+    set ttymouse=xterm2
+endif
+set mousemodel=popup                                      " right-click pops up context menu
+set laststatus=2
+set modeline
+set modelines=5
