@@ -20,12 +20,14 @@ Plugin 'junegunn/goyo.vim'
 Plugin 'junegunn/limelight.vim'
 " git
 Plugin 'tpope/vim-fugitive'
-" Plugin 'airblade/vim-gitgutter'
+Plugin 'airblade/vim-gitgutter'
 " tmux integration
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'christoomey/vim-tmux-runner'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'keith/tmux.vim'
+Plugin 'metakirby5/codi.vim'
+
 " Code navigation
 Plugin 'majutsushi/tagbar' 
 Plugin 'mhinz/vim-grepper' 
@@ -193,8 +195,10 @@ autocmd! BufNewFile,BufRead *.fsh,*.vsh set filetype=glsl
 let g:smartim_default = 'com.apple.keylayout.Canadian'
 let g:xcode_runner_command = 'VtrSendCommandToRunner! {cmd}'
 let g:vim_pbcopy_local_cmd = "pbcopy"
+au BufNewFile,BufRead *.swift setlocal colorcolumn=110,120
+
 "}}}
-" Javascript
+" Javascript{{{
 augroup javascript_folding
     au!
     au FileType javascript setlocal foldmethod=syntax
@@ -209,8 +213,7 @@ let g:javascript_conceal_prototype            = "¶"
 let g:javascript_conceal_static               = "•"
 let g:javascript_conceal_super                = "Ω"
 let g:javascript_conceal_arrow_function       = "⇒"
-"set conceallevel=1
-"
+"set conceallevel=1}}}
 " Snippets{{{
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
