@@ -1,6 +1,16 @@
 [core]
 	excludesfile = /Users/hristo/.gitignore_global
-	editor = /usr/local/bin/nvim
+    editor = /usr/local/bin/nvim
+[merge]
+    tool = vimdiff
+[mergetool]
+    prompt = true
+[mergetool "vimdiff"]
+    cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool]
+    prompt = false
+[diff]
+    tool = vimdiff
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
@@ -12,3 +22,8 @@
 	email = hristo.staykov@gmail.com
 [commit]
 	template = /Users/hristo/.stCommitMsg
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
