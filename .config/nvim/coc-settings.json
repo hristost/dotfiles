@@ -1,0 +1,23 @@
+{
+    "languageserver": {
+        "ccls": {
+            "command": "ccls",
+            "filetypes": ["c", "cpp", "objcpp", "cuda"],
+            "rootPatterns": [".ccls", "compile_commands.json", ".git/", ".hg/"],
+            "initializationOptions": {
+                "cache": {
+                    "directory": "/tmp/ccls"
+                }
+            }
+        } ,
+        "sourcekit-lsp": {
+            "filetypes": ["swift"],
+            "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
+        },
+        "clangd": {
+            "command": "/usr/local/opt/llvm/bin/clangd",
+            "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
+            "filetypes": ["cpp", "objc", "objcpp"]
+        }
+    }
+}
