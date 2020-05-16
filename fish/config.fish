@@ -1,6 +1,8 @@
 fish_vi_key_bindings
 	
+# bobthefish prompt configuration
 set -g theme_color_scheme terminal
+set -g theme_date_timezone America/New_York
 
 # rbenv
 status --is-interactive; and source (rbenv init -|psub)
@@ -18,11 +20,8 @@ set -g fish_user_paths "/usr/local/opt/python@3.8/bin" $fish_user_paths
 
 thefuck --alias | source
 
-# Config is an alias for managing dotfiles w/ git. 
-# See https://www.atlassian.com/git/tutorials/dotfiles
-alias config "git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
-
-
+# Set the prompt to use ANSI colours
+# See https://github.com/fish-shell/fish-shell/issues/3443#issuecomment-511227428
 set -U fish_color_autosuggestion      brblack
 set -U fish_color_cancel              -r
 set -U fish_color_command             brgreen
