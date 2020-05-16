@@ -62,4 +62,5 @@ function! s:show_documentation()
   endif
 endfunction
 
+nmap <leader>rn <Plug>(coc-rename)
 "}}}

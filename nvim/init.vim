@@ -6,9 +6,11 @@
 " Plugins{{{
 call plug#begin(stdpath('data') . '/plugged')
 
-Plug 'dhruvasagar/vim-markify'
+Plug 'dhruvasagar/vim-markify' " VIM Plugin Markify to indicate quickfix results on buffers using Signs
+Plug 'preservim/nerdtree'
 Plug 'elbeardmorez/vim-loclist-follow'
 Plug 'itchyny/lightline.vim'
+Plug 'dstein64/vim-menu'
 " Color schemes{{{
 Plug 'atelierbram/Base2Tone-vim'   
 Plug 'drewtempelmeyer/palenight.vim'
@@ -16,8 +18,8 @@ Plug 'joshdick/onedark.vim'
 Plug 'bluz71/vim-moonfly-colors'
 Plug 'arzg/vim-colors-xcode'
 Plug 'wadackel/vim-dogrun'
+Plug 'cocopon/iceberg.vim'
 " Colour functions
-Plug 'romgrk/lib.kom'
 Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 "}}}
 " Prose and Markdown {{{
@@ -37,7 +39,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 "}}}
 " tmux integration{{{
-Plug 'christoomey/vim-tmux-navigator'
+Plug 'christoomey/vim-tmux-navigator' "Seamless navigation between tmux panes and vim splits
 Plug 'christoomey/vim-tmux-runner'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'keith/tmux.vim'"}}}
@@ -73,9 +75,9 @@ call plug#end()
 let g:palenight_terminal_italics=1
 let g:onedark_terminal_italics=1
 
-colorscheme dogrun
+colorscheme iceberg
 let g:lightline = {
-      \ 'colorscheme': 'dogrun',
+      \ 'colorscheme': 'iceberg',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -90,18 +92,21 @@ let g:lightline = {
       \ }
 set guioptions-=e  " Don't use GUI tabline
 
-
+" hi DiffAdd guibg=#104a65 ctermbg=24 gui=bold cterm=bold
+" hi DiffChange guibg=#363e7f ctermbg=23 gui=bold cterm=bold
+" hi DiffDelete guifg=#d2d9ff ctermfg=189 guibg=#674267 ctermbg=96 gui=bold cterm=bold
+" hi DiffText guibg=#494f8b ctermbg=29 gui=NONE cterm=NONE
 "}}}
 " Swift higlight extensions{{{
-let s:colors = onedark#GetColors()
-let s:comment_grey = s:colors.comment_grey.gui
-let s:docstring = color#Lighten(s:comment_grey, '0.3')
-let s:inline = color#Lighten(s:comment_grey, '0.6')
+" let s:colors = onedark#GetColors()
+" let s:comment_grey = s:colors.comment_grey.gui
+" let s:docstring = color#Lighten(s:comment_grey, '0.3')
+" let s:inline = color#Lighten(s:comment_grey, '0.6')
 
-execute "highlight SwiftDocString gui=bold guifg=" (s:docstring)
-execute "highlight SwiftDocStringParam guifg=" (s:inline)
-execute "highlight SwiftDocStringInlineCode guifg=" (s:inline)
-execute "highlight SwiftMarkerName gui=bold"
+" execute "highlight SwiftDocString gui=bold guifg=" (s:docstring)
+" execute "highlight SwiftDocStringParam guifg=" (s:inline)
+" execute "highlight SwiftDocStringInlineCode guifg=" (s:inline)
+" execute "highlight SwiftMarkerName gui=bold"
 
 " }}}
 " Highlight current line & column {{{
@@ -171,8 +176,7 @@ let g:vim_pbcopy_local_cmd = "pbcopy"
 autocmd BufNewFile,BufRead *.swift set filetype=swift
 
 if has("nvim")
-let g:deoplete#enable_at_startup = 1
-autocmd FileType swift imap <buffer> <C-k> <Plug>(autocomplete_swift_jump_to_placeholder)
+" autocmd FileType swift imap <buffer> <C-k> <Plug>(autocomplete_swift_jump_to_placeholder)
 autocmd FileType swift set formatoptions+=ro
 endif
 
@@ -217,6 +221,8 @@ let g:loclist_follow_target = 'last'
 
 source $HOME/.config/nvim/coc.vim
 
+let g:startify_custom_header = startify#pad(["智者樂水 仁者樂山"])
+
 set number                  " Show line number
 set hlsearch                " Highlight search occurences
 set inccommand=nosplit      " Show preview when substituting
@@ -259,3 +265,17 @@ function! ChangeKey()
     :e
 endfunction
 nnoremap <C-q> :call ChangeKey()<CR>
+
+"hristost/PanTilt"
+function! ShowRepo()
+    normal! 0f'"ayi'
+    let repo = @a
+	let script='curl https://api.github.com/repos/'. repo
+	let response=system(script)
+    let desc = matchstr(response, '"description": "\zs[^"]*\ze"')
+    normal! A " 
+    let @a=desc
+    normal! "ap
+"
+endfunction
+nnoremap <C-q> :call ShowRepo()<CR>

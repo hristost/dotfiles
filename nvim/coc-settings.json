@@ -11,13 +11,13 @@
             }
         } ,
         "sourcekit-lsp": {
-            "filetypes": ["swift"],
+            "filetypes": ["swift", "objc"],
             "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
         },
         "clangd": {
             "command": "/usr/local/opt/llvm/bin/clangd",
             "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
-            "filetypes": ["cpp", "objc", "objcpp"]
+            "filetypes": ["cpp"]
         }
     }
 }
