@@ -1,5 +1,5 @@
 [core]
-	excludesfile = /Users/hristo/.gitignore_global
+	excludesfile = /Users/hristo/.config/git/ignore
     editor = /usr/local/bin/nvim
     pager = delta; --minus-color="#572626" --minus-emph-color="#901011" --plus-color="#2D473A" --plus-emph-color="#006000"
 [merge]
