@@ -1,0 +1,13 @@
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/core"
+tap "homebrew/services"
+
+brew "asciinema"
+brew "libpng"
+brew "ghostscript"
+brew "ffmpeg"
+brew "imagemagick", link: false
+brew "imagemagick@6", link: true
+brew "pstoedit"

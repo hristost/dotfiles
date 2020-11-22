@@ -1,10 +1,15 @@
 fish_vi_key_bindings
 	
+#export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
 # bobthefish prompt configuration
-set -g theme_color_scheme terminal
+#set -g theme_color_scheme terminal-light
 set -g theme_date_timezone America/New_York
 
+
 # rbenv
+set -gx PATH {$HOME}/.gem/ruby/2.7.0/bin  $PATH
+set -gx PATH {$HOME}/.bin  $PATH
 status --is-interactive; and source (rbenv init -|psub)
 set -gx GEM_HOME ~/.gems
 
@@ -13,6 +18,10 @@ test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shel
 
 # PIP
 set -gx PATH {$HOME}/Library/Python/3.7/bin $PATH
+set -gx PATH {$HOME}/.cargo/bin $PATH
+set -gx PATH {$HOME}/.cabal/bin $PATH
+set -gx PATH {$HOME}/.ghcup/bin $PATH
+
 
 # man
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"

@@ -1,30 +1,41 @@
 [core]
-	excludesfile = /Users/hristo/.config/git/ignore
-    editor = /usr/local/bin/nvim
-    pager = delta; --minus-color="#572626" --minus-emph-color="#901011" --plus-color="#2D473A" --plus-emph-color="#006000"
+	excludesfile = /Users/hristo/.gitignore_global
+    editor = /opt/brew/bin/nvim
+    pager = delta
+
+[mergetool "nvim"]
+  cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
+
+# set "nvim" as tool for merging
 [merge]
-    tool = vimdiff
-[mergetool]
-    prompt = true
-[mergetool "vimdiff"]
-    cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+    tool = nvim
+
 [difftool]
     prompt = false
+
 [diff]
     tool = vimdiff
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+
 [user]
 	name = hss
 	email = hristo.staykov@gmail.com
-[commit]
-	template = /Users/hristo/.stCommitMsg
+
 [filter "lfs"]
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
+
+[delta]
+    side-by-side = true
+
+    theme = Github
+    light = true
+    file-style=underline 
+    hunk-style=plain
+    keep-plus-minus-markers = true
+    line-numbers = true
+    line-numbers-minus-style="red" 
+    line-numbers-plus-style="green" 
+    line-numbers-zero-style="brightblack"
+

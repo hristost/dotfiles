@@ -36,6 +36,7 @@ Plug 'dhruvasagar/vim-table-mode'
 "}}}
 " git{{{
 Plug 'tpope/vim-fugitive'
+Plug 'shumphrey/fugitive-gitlab.vim'
 Plug 'airblade/vim-gitgutter'
 "}}}
 " tmux integration{{{
@@ -56,6 +57,8 @@ if has('macunix')
     Plug 'ybian/smartim'
     " File types
     Plug 'hristost/swift.vim', {'branch': 'hs'}
+    Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+
     Plug 'darfink/vim-plist'
 endif"}}}
 " Pain
@@ -76,14 +79,46 @@ let g:palenight_terminal_italics=1
 let g:onedark_terminal_italics=1
 
 colorscheme iceberg
+
+function! WordCount()
+    let currentmode = mode()
+    if !exists("g:lastmode_wc")
+        let g:lastmode_wc = currentmode
+    endif
+    " if we modify file, open a new buffer, be in visual ever, or switch modes
+    " since last run, we recompute.
+    if &modified || !exists("b:wordcount") || currentmode =~? '\c.*v' || currentmode != g:lastmode_wc
+        let g:lastmode_wc = currentmode
+        let l:old_position = getpos('.')
+        let l:old_status = v:statusmsg
+        execute "silent normal g\<c-g>"
+        if v:statusmsg == "--No lines in buffer--"
+            let b:wordcount = 0
+        else
+            let s:split_wc = split(v:statusmsg)
+            if index(s:split_wc, "Selected") < 0
+                let b:wordcount = str2nr(s:split_wc[11])
+            else
+                let b:wordcount = str2nr(s:split_wc[5])
+            endif
+            let v:statusmsg = l:old_status
+        endif
+        call setpos('.', l:old_position)
+        return b:wordcount
+    else
+        return b:wordcount
+    endif
+endfunction
+
 let g:lightline = {
       \ 'colorscheme': 'iceberg',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \             [ 'gitbranch', 'readonly', 'filename', 'wordcount', 'modified' ] ]
       \ },
       \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
+      \   'gitbranch': 'fugitive#head',
+      \   'wordcount': 'WordCount'
       \ },
 	  \'tabline' : {
 	  \   'left': [ ['tabs'] ],
@@ -220,8 +255,12 @@ let g:loclist_follow_target = 'last'
 "}}}
 
 source $HOME/.config/nvim/coc.vim
+" Gitlab API keys
+source $HOME/.config/nvim/keys.vim
 
 let g:startify_custom_header = startify#pad(["智者樂水 仁者樂山"])
+
+set shell=/bin/bash
 
 set number                  " Show line number
 set hlsearch                " Highlight search occurences
@@ -279,3 +318,26 @@ function! ShowRepo()
 "
 endfunction
 nnoremap <C-q> :call ShowRepo()<CR>
+
+function! s:rp_purs(buf)
+  let b = a:buf
+  " Alternative to Ctrl-d, ":endpaste" will terminate
+  " multi-line continuations in psci
+  " let b = substitute(b, ':endpaste\>', '', 'g')
+  " Remove comments. In PSCi they produce an error
+  " (Multi-line comments not supported here)
+  " let b = substitute(b, '\%(^\|[\n\r\x00]\)\s*--[^\n\r\x00]*', '', 'g')
+  " Extra newline to flush any remaining 'lastline' from preprocess
+  return b."<cr>"
+endfunction
+
+let g:codi#log = '/Users/hristo/Desktop/log.txt'
+let g:codi#raw = 1
+let g:codi#interpreters = {
+            \ 'swift': {
+            \ 'bin': ['swift'],
+            \ 'prompt': '^\s*\d\d*\(>\|\.\) ',
+            \ 'rephrase': function('s:rp_purs'),
+            \ },
+            \ }
+	let termdebugger = "lldb"

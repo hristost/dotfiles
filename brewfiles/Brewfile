@@ -1,0 +1,61 @@
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "neovim/neovim"
+tap "robotsandpencils/made"
+tap "thoughtbot/formulae"
+tap "universal-ctags/universal-ctags"
+
+brew "fish"
+brew "bash"
+brew "git"
+brew "bat"
+brew "fzf"
+brew "neovim"
+brew "git-delta"
+brew "thefuck"
+brew "tig"
+brew "tmate"
+brew "tmux"
+brew "tree"
+brew "parallel"
+brew "autoconf"
+brew "datamash"
+brew "less"
+brew gnuplot
+cask kitty
+
+brew "koekeishiya/formulae/skhd", args: ["HEAD"]
+brew "koekeishiya/formulae/yabai"
+
+brew "python"
+brew "go"
+brew "llvm"
+brew "ccls"
+brew "cloc"
+brew "ctags", link: false
+brew "libtool"
+brew "nvm"
+brew "ruby-build"
+brew "rbenv"
+brew "reattach-to-user-namespace"
+brew "scipy"
+brew "sl"
+brew "the_silver_searcher"
+brew "wget"
+brew "yarn", link: false
+brew "oclint/formulae/oclint"
+
+brew "docker"
+brew "docker-machine"
+
+brew "robotsandpencils/made/xcodes"
+brew "xctool"
+brew "swiftlint", args: ["HEAD"]
+
+brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
+
+cask "mactex"
+brew "pandoc"

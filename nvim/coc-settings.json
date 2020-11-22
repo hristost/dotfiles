@@ -18,6 +18,12 @@
             "command": "/usr/local/opt/llvm/bin/clangd",
             "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
             "filetypes": ["cpp"]
+        },
+        "haskell": {
+            "command": "haskell-language-server-8.10.2",
+            "args": ["--lsp"],
+            "rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
+            "filetypes": ["haskell", "lhaskell"]
         }
     }
 }

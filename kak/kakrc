@@ -1,0 +1,135 @@
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+
+plug "kak-lsp/kak-lsp" do %{
+    cargo install --locked --force --path .
+} config %{
+    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hristo/.config/kak-lsp/kak-lsp.toml"
+        # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+        # 
+    hook global WinSetOption filetype=(c|cpp|cc|rust|javascript|swift) %{
+        set-option window lsp_auto_highlight_references true
+        set-option window lsp_hover_anchor false
+        lsp-auto-hover-enable
+        echo -debug "Enabling LSP for filtetype %opt{filetype}"
+        lsp-enable-window
+    }
+
+    hook global WinSetOption filetype=(rust) %{
+        set window lsp_server_configuration rust.clippy_preference="on"
+    }
+
+    hook global WinSetOption filetype=rust %{
+        hook window BufWritePre .* %{
+            evaluate-commands %sh{
+                test -f rustfmt.toml && printf lsp-formatting-sync
+            }
+        }
+    }
+
+    hook global KakEnd .* lsp-exit
+}
+
+plug "alexherbo2/prelude.kak"
+plug "alexherbo2/connect.kak" config %{
+    require-module connect
+    require-module connect-fzf
+    map global normal <c-t> ': connect-terminal<ret>'
+}
+plug "alexherbo2/explore.kak" %{
+    require-module explore-files
+
+    # Explore files and buffers with fzf
+    alias global explore-files fzf-files
+    alias global explore-buffers fzf-buffers
+    map -docstring 'fzf' global normal '<c-p>' ': fzf-files<ret>'
+
+    explore-files-enable
+}
+
+plug "JJK96/kakoune-rainbow" demand
+#plug "caksoylar/kakoune-mysticaltutor" theme %{ colorscheme mysticaltutor }
+#plug "caksoylar/kakoune-snow" theme %{ colorscheme snow-dark }  # or snow-dark
+#plug "nesyamun/nord-kakoune" theme %{ colorscheme nord }
+
+plug "andreyorst/smarttab.kak" defer smarttab %{
+    # when `backspace' is pressed, 4 spaces are deleted at once
+    set-option global softtabstop 4
+} config %{
+    # these languages will use `expandtab' behavior
+    hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl|swift) expandtab
+    # these languages will use `noexpandtab' behavior
+    hook global WinSetOption filetype=(makefile|gas) noexpandtab
+    # these languages will use `smarttab' behavior
+    hook global WinSetOption filetype=(c|cpp) smarttab
+}
+
+
+colorscheme kaleidoscope-light
+
+add-highlighter global/ show-matching
+
+
+require-module kitty
+
+declare-option -docstring %{window type that kitty creates on new and repl calls (kitty|os)} str kitty_window_type os
+hook global WinSetOption comment_line=(.*) %{
+    add-highlighter -override window/todo regex "\Q%val{hook_param_capture_1}\E\h*(TODO:|FIXME:|NOTE:|XXX:)[^\n]*" 1:rgb:ff8c00+Fb
+}
+
+hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor }
+hook global RegisterModified '/' %{ add-highlighter -override global/search regex "%reg{/}" 0:+b }
+
+hook global BufCreate .*\.tex %{
+    set-option buffer filetype latex
+}
+# LSP
+#set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hristo/.config/kak-lsp/kak-lsp.toml"
+#lsp-enable
+
+# set global ui_options ncurses_assistant=cat
+
+# Dvorak
+map global normal l s
+map global normal s l
+map global normal n k
+map global normal k n
+map global normal t j
+map global normal j t
+
+map global normal <s-l> <s-s>
+map global normal <s-s> <s-l>
+map global normal <s-n> <s-k>
+map global normal <s-k> <s-n>
+map global normal <s-t> <s-j>
+map global normal <s-j> <s-t>
+
+map global normal <a-l> <a-s>
+map global normal <a-L> <a-S>
+map global normal <a-s> <a-l>
+map global normal <a-n> <a-k>
+map global normal <a-k> <a-n>
+
+map global normal <c-l> <c-s>
+map global normal <c-s> <c-l>
+map global normal <c-n> <c-k>
+map global normal <c-k> <c-n>
+map global normal <c-t> <c-j>
+map global normal <c-j> <c-t>
+
+unmap global goto l
+map global goto s l -docstring "line end"
+unmap global goto l
+map global goto n k
+map global goto t j
+declare-user-mode enter
+map global enter H '<esc>I' -docstring '⇐ insert before line'
+map global enter h '<esc>i' -docstring '← insert before'
+map global enter j '<esc>o' -docstring '↓ insert below'
+map global enter k '<esc>O' -docstring '↑ insert above'
+map global enter l '<esc>a' -docstring '→ insert after'
+map global enter L '<esc>A' -docstring '⇒ insert after line'
+
+hook global InsertChar \n %[ try %[ exec -draft k<a-x> <a-k>[{(]\h*$<ret> j<a-gt> ] ]
+hook global InsertChar \n %{ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P }
+
+

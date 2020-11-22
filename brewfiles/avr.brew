@@ -1,0 +1,10 @@
+tap "oclint/formulae"
+tap "osx-cross/avr"
+tap "px4/px4"
+
+brew "arduino-cli"
+brew "avrdude"
+brew "osx-cross/avr/avr-gcc"
+brew "px4/px4/gcc-arm-none-eabi"
+brew "dfu-programmer"
+brew "open-ocd"

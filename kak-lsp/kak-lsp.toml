@@ -1,0 +1,13 @@
+[language.latex]
+filetypes = ["latex", "tex"]
+roots = ["header.tex"]
+command = "texlab"
+[language.haskell]
+filetypes = ["haskell"]
+roots = ["Setup.hs", "stack.yaml", "*.cabal"]
+command = "/Users/hristo/.bin/haskell-language-server-8.10.2"
+args = ["--lsp"]
+[language.swift]
+filetypes = ["swift"]
+roots = ["Package.swift"]
+command = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
