@@ -9,8 +9,15 @@ command = "/Users/hristo/.bin/haskell-language-server-8.10.2"
 args = ["--lsp"]
 [language.swift]
 filetypes = ["swift"]
-roots = ["Package.swift"]
+roots = ["Package.swift", "Podfile"]
 command = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
+
+[language.c_cpp]
+filetypes = ["c", "cpp"]
+roots = ["compile_commands.json", ".clangd"]
+command = "ccls"
+# Disable additional information in autocompletion menus that Kakoune inserts into the buffer until https://github.com/ul/kak-lsp/issues/40 gets fixed
+args = ["--init={\"completion\":{\"detailedLabel\":false}}"]
 
 snippet_support = true
 verbosity = 2
@@ -92,12 +99,6 @@ roots = ["requirements.txt", "setup.py", ".git", ".hg"]
 command = "pyls"
 offset_encoding = "utf-8"
 
-[language.haskell]
-filetypes = ["haskell"]
-roots = ["Setup.hs", "stack.yaml", "*.cabal"]
-command = "hie"
-args = ["--lsp"]
-
 [language.go]
 filetypes = ["go"]
 roots = ["Gopkg.toml", "go.mod", ".git", ".hg"]
@@ -147,9 +148,4 @@ runtime = "node"
 elmPath = "elm"
 elmFormatPath = "elm-format"
 elmTestPath = "elm-test"
-
-[language.latex]
-filetypes = ["latex"]
-roots = [".git"]
-command = "texlab"
 

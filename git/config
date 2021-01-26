@@ -1,5 +1,5 @@
 [core]
-	excludesfile = /Users/hristo/.gitignore_global
+	excludesfile = /Users/hs/.gitignore_global
     editor = /opt/brew/bin/nvim
     pager = delta
 
@@ -15,6 +15,10 @@
 
 [diff]
     tool = vimdiff
+    
+[diff "swift"]
+	xfuncname = ^\\s*(.*(func \\w|subscript\\(|init\\??\\(|deinit |class \\w|struct \\w|protocol \\w|extension \\w)[^{]*[{])
+	#xfuncname = ^\\s*(.*(func \\w|subscript\\(|init\\??\\(|deinit |class \\w|struct \\w|protocol \\w|extension \\w).*)$
 
 [user]
 	name = hss
@@ -28,9 +32,9 @@
 
 [delta]
     side-by-side = true
-
     theme = Github
-    light = true
+    theme = base16
+    #light = true
     file-style=underline 
     hunk-style=plain
     keep-plus-minus-markers = true
@@ -39,3 +43,24 @@
     line-numbers-plus-style="green" 
     line-numbers-zero-style="brightblack"
 
+[alias]
+    co = checkout
+    ci = commit
+    s = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file -t
+    dump = cat-file -p
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+
+[tig "color"]
+	cursor = white color0 bold
+	title-focus = black color6 bold
+	title-blur  = default default
+	
+	

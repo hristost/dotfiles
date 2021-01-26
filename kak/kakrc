@@ -1,38 +1,56 @@
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
-plug "kak-lsp/kak-lsp" do %{
-    cargo install --locked --force --path .
+plug "https://github.com/robertmeta/plug.kak" noload
+
+plug "ul/kak-lsp" do %{
+    # cargo build --release --locked
+    # cargo install --force --path .
 } config %{
-    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hristo/.config/kak-lsp/kak-lsp.toml"
-        # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
-        # 
-    hook global WinSetOption filetype=(c|cpp|cc|rust|javascript|swift) %{
+
+    # uncomment to enable debugging
+    eval %sh{echo ${kak_opt_lsp_cmd} >> /tmp/kak-lsp.log}
+    #set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hs/.config/kak/kak-lsp.toml"
+    set global lsp_cmd "kak-lsp -s %val{session} --config /Users/hs/.config/kak/kak-lsp.toml"
+
+    # this is not necessary; the `lsp-enable-window` will take care of it
+    # eval %sh{${kak_opt_lsp_cmd} --kakoune -s $kak_session}
+
+    set global lsp_diagnostic_line_error_sign ''
+    set global lsp_diagnostic_line_warning_sign ''
+
+    define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
+    define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
+    define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
+    map global lsp -docstring "Rename the item under cursor" R ": lsp-rename-prompt<ret>"
+    map global user -docstring "Enable lsp keymap mode for next key" l ": enter-user-mode<space>lsp<ret>"
+
+
+
+    define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
+    hook global WinSetOption filetype=(swift|c|cpp|cc|rust|javascript|typescript|latex) %{
         set-option window lsp_auto_highlight_references true
         set-option window lsp_hover_anchor false
+        lsp-inlay-diagnostics-enable window
         lsp-auto-hover-enable
         echo -debug "Enabling LSP for filtetype %opt{filetype}"
         lsp-enable-window
     }
 
-    hook global WinSetOption filetype=(rust) %{
-        set window lsp_server_configuration rust.clippy_preference="on"
-    }
-
-    hook global WinSetOption filetype=rust %{
-        hook window BufWritePre .* %{
-            evaluate-commands %sh{
-                test -f rustfmt.toml && printf lsp-formatting-sync
-            }
-        }
-    }
-
     hook global KakEnd .* lsp-exit
 }
+hook global WinSetOption filetype=swift %{
+    set-option window lintcmd "swiftlint --quiet --path"
+    set-option buffer formatcmd '~/.local/bin/swift-format'
+}
+
+plug "occivink/kakoune-gdb"
 
 plug "alexherbo2/prelude.kak"
+plug "alexherbo2/pager.kak"
 plug "alexherbo2/connect.kak" config %{
     require-module connect
     require-module connect-fzf
+    require-module connect-nnn
     map global normal <c-t> ': connect-terminal<ret>'
 }
 plug "alexherbo2/explore.kak" %{
@@ -42,17 +60,67 @@ plug "alexherbo2/explore.kak" %{
     alias global explore-files fzf-files
     alias global explore-buffers fzf-buffers
     map -docstring 'fzf' global normal '<c-p>' ': fzf-files<ret>'
+    map -docstring 'fzf' global normal '<c-f>' ': fzf-grep<ret>'
 
     explore-files-enable
 }
 
+plug "delapouite/kakoune-registers" demand
+plug 'delapouite/kakoune-buffers' %{
+    hook global WinDisplay .* info-buffers
+
+    map global user b ':enter-buffers-mode<ret>'              -docstring 'buffers…'
+    map global user B ':enter-user-mode -lock buffers<ret>'   -docstring 'buffers (lock)…'
+
+    alias global bd delete-buffer
+    alias global bf buffer-first
+    alias global bl buffer-last
+    alias global bo buffer-only
+    alias global bo! buffer-only-force
+}
 plug "JJK96/kakoune-rainbow" demand
+plug "insipx/kak-crosshairs" demand
+plug "occivink/kakoune-roguelight" demand
+plug "Delapouite/kakoune-colors" theme
+#plug "evanrelf/primer.kak" theme %{ colorscheme primer }
+# plug "coder5506/shirotelin-kakoune" theme %{
+#     colorscheme shirotelin
+#     face global MenuForeground black,rgb:00005f
+#     face global MenuBackground rgb:00005f,black
+#     face global MenuInfo rgb:00005f
+#     face global Information white,black
+#     face global Error black,red
+#     face global StatusLine rgb:00005f,default
+#     face global StatusLineMode rgb:af0000,default
+#     face global StatusLineInfo rgb:0000af,default
+#     face global StatusLineValue rgb:005f00,default
+#     face global StatusCursor white,blue
+# 
+#     face global PrimarySelection default,default+r
+#     face global PrimarySelection default,rgb:8fb7df
+#     face global PrimarySelection default,rgb:afd7ff
+#     face global PrimaryCursor default,default+r
+#     face global PrimaryCursor black,blue
+#     face global PrimaryCursor black,rgb:0000af+B
+#     face global PrimaryCursorEol black,red
+# 
+#     #face global SecondarySelection default, rgba:afdfffff
+#     face global SecondarySelection default,rgb:cccccc
+#     face global SecondaryCursor black,rgb:666666
+#     face global SecondaryCursorEol black,red
+# 
+#     face global MatchingChar default,default+r
+#     face global Whitespace default,default+fb
+#     face global BufferPadding rgb:00005f,default
+# 
+# }
+colorscheme spaceduck
 #plug "caksoylar/kakoune-mysticaltutor" theme %{ colorscheme mysticaltutor }
 #plug "caksoylar/kakoune-snow" theme %{ colorscheme snow-dark }  # or snow-dark
 #plug "nesyamun/nord-kakoune" theme %{ colorscheme nord }
 
 plug "andreyorst/smarttab.kak" defer smarttab %{
-    # when `backspace' is pressed, 4 spaces are deleted at once
+    # when `backspace' is pressed:, 4 spaces are deleted at once
     set-option global softtabstop 4
 } config %{
     # these languages will use `expandtab' behavior
@@ -60,34 +128,48 @@ plug "andreyorst/smarttab.kak" defer smarttab %{
     # these languages will use `noexpandtab' behavior
     hook global WinSetOption filetype=(makefile|gas) noexpandtab
     # these languages will use `smarttab' behavior
-    hook global WinSetOption filetype=(c|cpp) smarttab
+    hook global WinSetOption filetype=(c|cpp|haskell) expandtab
 }
-
-
-colorscheme kaleidoscope-light
 
 add-highlighter global/ show-matching
 
 
+# Kitty
+ 
+hook global ModuleLoaded kitty %{
+    # Kitty does not have popovers, but we can have fzf cover all of kakoune in a new tab instead
+    alias global popup kitty-terminal-tab
+    alias global terminal kitty
+
+}
 require-module kitty
 
+# Create windows, not tabs
 declare-option -docstring %{window type that kitty creates on new and repl calls (kitty|os)} str kitty_window_type os
+
 hook global WinSetOption comment_line=(.*) %{
     add-highlighter -override window/todo regex "\Q%val{hook_param_capture_1}\E\h*(TODO:|FIXME:|NOTE:|XXX:)[^\n]*" 1:rgb:ff8c00+Fb
 }
 
-hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor }
+hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ' }
+hook global WinCreate ^[^*]+$ %{ add-highlighter window/ show-matching }
 hook global RegisterModified '/' %{ add-highlighter -override global/search regex "%reg{/}" 0:+b }
 
 hook global BufCreate .*\.tex %{
     set-option buffer filetype latex
 }
+hook global BufCreate .*\.md %{
+    add-highlighter buffer/ wrap -word -width 120
+}
+
+hook global WinCreate ^[^*]+$ %{editorconfig-load}
+
 # LSP
-#set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hristo/.config/kak-lsp/kak-lsp.toml"
-#lsp-enable
 
 # set global ui_options ncurses_assistant=cat
+set global ui_options ncurses_status_on_top=yes 
 
+map global normal '#' ga
 # Dvorak
 map global normal l s
 map global normal s l
@@ -113,23 +195,26 @@ map global normal <c-l> <c-s>
 map global normal <c-s> <c-l>
 map global normal <c-n> <c-k>
 map global normal <c-k> <c-n>
-map global normal <c-t> <c-j>
+# map global normal <c-t> <c-j>
 map global normal <c-j> <c-t>
 
-unmap global goto l
 map global goto s l -docstring "line end"
-unmap global goto l
-map global goto n k
-map global goto t j
-declare-user-mode enter
-map global enter H '<esc>I' -docstring '⇐ insert before line'
-map global enter h '<esc>i' -docstring '← insert before'
-map global enter j '<esc>o' -docstring '↓ insert below'
-map global enter k '<esc>O' -docstring '↑ insert above'
-map global enter l '<esc>a' -docstring '→ insert after'
-map global enter L '<esc>A' -docstring '⇒ insert after line'
+map global goto n k -docstring "buffer top"
+map global goto t j -docstring "buffer bottom"
 
 hook global InsertChar \n %[ try %[ exec -draft k<a-x> <a-k>[{(]\h*$<ret> j<a-gt> ] ]
-hook global InsertChar \n %{ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P }
+hook global InsertChar \n %{ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P  }
+set global tabstop 4                                                        
+set global indentwidth 4
 
+# Spelling
+declare-user-mode spell
+map global user -docstring "Enable spell keymap mode for next key" <ret> ": enter-user-mode<space>spell<ret>"
+
+map global spell s '<space><a-i>w:spell-replace<ret>' -docstring "Suggest replacement words"
+map global spell l '<space><a-i>w:spell-add<ret>'     -docstring "Learn spelling"
+map global spell n ':spell-next<ret>'                 -docstring "Next"
+map global spell r ':spell en-GB<ret>'                -docstring "Refresh"
+map global spell c ':spell-clear<ret>'                -docstring "Clear"
+map global goto  g ':spell-next<ret>'                 -docstring "next misspelling"
 
