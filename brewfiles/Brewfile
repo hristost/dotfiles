@@ -24,8 +24,7 @@ brew "parallel"
 brew "autoconf"
 brew "datamash"
 brew "less"
-brew gnuplot
-cask kitty
+cask "kitty"
 
 brew "koekeishiya/formulae/skhd", args: ["HEAD"]
 brew "koekeishiya/formulae/yabai"
