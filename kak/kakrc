@@ -6,14 +6,8 @@ plug "ul/kak-lsp" do %{
     # cargo build --release --locked
     # cargo install --force --path .
 } config %{
-
-    # uncomment to enable debugging
-    eval %sh{echo ${kak_opt_lsp_cmd} >> /tmp/kak-lsp.log}
-    #set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log --config /Users/hs/.config/kak/kak-lsp.toml"
-    set global lsp_cmd "kak-lsp -s %val{session} --config /Users/hs/.config/kak/kak-lsp.toml"
-
-    # this is not necessary; the `lsp-enable-window` will take care of it
-    # eval %sh{${kak_opt_lsp_cmd} --kakoune -s $kak_session}
+    set global lsp_cmd "kak-lsp -s %val{session} --config %val{config}/kak-lsp.toml"
+    #set global lsp_cmd "%opt{lsp_cmd} -vvv --log /tmp/kak-lsp.log"
 
     set global lsp_diagnostic_line_error_sign ''
     set global lsp_diagnostic_line_warning_sign ''
