@@ -77,20 +77,20 @@ fn - i : issw com.apple.inputmethod.Korean.2SetKorean
 fn - k : issw com.apple.inputmethod.ChineseHandwriting
 
 # Focus window
-fn - h : yabai -m window --focus west
-fn - t : yabai -m window --focus south
-fn - n : yabai -m window --focus north
-fn - s : yabai -m window --focus east
+fn - h : yabai -m window --focus west  || yabai -m display --focus west
+fn - t : yabai -m window --focus south || yabai -m display --focus south
+fn - n : yabai -m window --focus north || yabai -m display --focus north
+fn - s : yabai -m window --focus east  || yabai -m display --focus east
 
 # Move window
 hyper - j    : yabai -m window --swap west;  
 hyper - k    : yabai -m window --swap south; 
 hyper - l    : yabai -m window --swap north; 
 hyper - 0x29 : yabai -m window --swap east;  
-fn + cmd - h : yabai -m window --swap west;  
+fn + cmd - h : yabai -m window --swap west || $(yabai -m window --display west; yabai -m window --wrap last;  yabai -m display --focus west);    
 fn + cmd - t : yabai -m window --swap south; 
 fn + cmd - n : yabai -m window --swap north; 
-fn + cmd - s : yabai -m window --swap east;  
+fn + cmd - s : yabai -m window --swap east || $(yabai -m window --display east; yabai -m window --wrap first; yabai -m display --focus east);  
 
 # Resize window
 fn - g : yabai -m window --resize left:-100:0 || yabai -m window --resize right:-100:0
@@ -106,8 +106,6 @@ fn - 0x2F : yabai -m space --mirror x-axis
 fn - 0x2C : yabai -m space --mirror y-axis
 fn - 0x18 : yabai -m space --balance
 
-fn - q : yabai -m display --focus 1
-fn - w : yabai -m display --focus 2
 
 # Multiple displays
 hyper - q : yabai -m window --display 1; yabai -m display --focus 1 

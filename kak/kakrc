@@ -34,7 +34,7 @@ plug "ul/kak-lsp" do %{
 }
 hook global WinSetOption filetype=swift %{
     set-option window lintcmd "swiftlint --quiet --path"
-    set-option buffer formatcmd '~/.local/bin/swift-format'
+    set-option buffer formatcmd '~/.local/bin/swift-format --configuration ~/.swift-format'
 }
 
 plug "occivink/kakoune-gdb"
@@ -76,39 +76,41 @@ plug "JJK96/kakoune-rainbow" demand
 plug "insipx/kak-crosshairs" demand
 plug "occivink/kakoune-roguelight" demand
 plug "Delapouite/kakoune-colors" theme
-#plug "evanrelf/primer.kak" theme %{ colorscheme primer }
-# plug "coder5506/shirotelin-kakoune" theme %{
-#     colorscheme shirotelin
-#     face global MenuForeground black,rgb:00005f
-#     face global MenuBackground rgb:00005f,black
-#     face global MenuInfo rgb:00005f
-#     face global Information white,black
-#     face global Error black,red
-#     face global StatusLine rgb:00005f,default
-#     face global StatusLineMode rgb:af0000,default
-#     face global StatusLineInfo rgb:0000af,default
-#     face global StatusLineValue rgb:005f00,default
-#     face global StatusCursor white,blue
-# 
-#     face global PrimarySelection default,default+r
-#     face global PrimarySelection default,rgb:8fb7df
-#     face global PrimarySelection default,rgb:afd7ff
-#     face global PrimaryCursor default,default+r
-#     face global PrimaryCursor black,blue
-#     face global PrimaryCursor black,rgb:0000af+B
-#     face global PrimaryCursorEol black,red
-# 
-#     #face global SecondarySelection default, rgba:afdfffff
-#     face global SecondarySelection default,rgb:cccccc
-#     face global SecondaryCursor black,rgb:666666
-#     face global SecondaryCursorEol black,red
-# 
-#     face global MatchingChar default,default+r
-#     face global Whitespace default,default+fb
-#     face global BufferPadding rgb:00005f,default
-# 
-# }
+plug "evanrelf/primer.kak" theme %{ colorscheme primer }
+#plug "coder5506/shirotelin-kakoune" theme %{
+#    colorscheme shirotelin
+#    face global MenuForeground black,rgb:00005f
+#    face global MenuBackground rgb:00005f,black
+#    face global MenuInfo rgb:00005f
+#    face global Information white,black
+#    face global Error black,red
+#    face global StatusLine rgb:00005f,default
+#    face global StatusLineMode rgb:af0000,default
+#    face global StatusLineInfo rgb:0000af,default
+#    face global StatusLineValue rgb:005f00,default
+#    face global StatusCursor white,blue
+#
+#    face global PrimarySelection default,default+r
+#    face global PrimarySelection default,rgb:8fb7df
+#    face global PrimarySelection default,rgb:afd7ff
+#    face global PrimaryCursor default,default+r
+#    face global PrimaryCursor black,blue
+#    face global PrimaryCursor black,rgb:0000af+B
+#    face global PrimaryCursorEol black,red
+#
+#    #face global SecondarySelection default, rgba:afdfffff
+#    face global SecondarySelection default,rgb:cccccc
+#    face global SecondaryCursor black,rgb:666666
+#    face global SecondaryCursorEol black,red
+#
+#    face global MatchingChar default,default+r
+#    face global Whitespace default,default+fb
+#    face global BufferPadding rgb:00005f,default
+#
+#}
 colorscheme spaceduck
+plug "raiguard/one.kak" theme
+plug 'delapouite/kakoune-palette'
 #plug "caksoylar/kakoune-mysticaltutor" theme %{ colorscheme mysticaltutor }
 #plug "caksoylar/kakoune-snow" theme %{ colorscheme snow-dark }  # or snow-dark
 #plug "nesyamun/nord-kakoune" theme %{ colorscheme nord }
@@ -134,19 +136,23 @@ hook global ModuleLoaded kitty %{
     # Kitty does not have popovers, but we can have fzf cover all of kakoune in a new tab instead
     alias global popup kitty-terminal-tab
     alias global terminal kitty
-
 }
 require-module kitty
+set-option global kitty_window_type os-window
 
-# Create windows, not tabs
-declare-option -docstring %{window type that kitty creates on new and repl calls (kitty|os)} str kitty_window_type os
 
 hook global WinSetOption comment_line=(.*) %{
     add-highlighter -override window/todo regex "\Q%val{hook_param_capture_1}\E\h*(TODO:|FIXME:|NOTE:|XXX:)[^\n]*" 1:rgb:ff8c00+Fb
 }
 
-hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ' }
+#hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ⎸ ' }
+hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ⎸ ' -cursor-separator '  ' }
+#hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ⎹ ' -cursor-separator '  ' }
 hook global WinCreate ^[^*]+$ %{ add-highlighter window/ show-matching }
+
+set-option global ui_options ncurses_padding_fill=yes
+set-option -add global ui_options ncurses_padding_char=╱ # More fancy examples: ▚ ╳ ╱ ┼
+
 hook global RegisterModified '/' %{ add-highlighter -override global/search regex "%reg{/}" 0:+b }
 
 hook global BufCreate .*\.tex %{
@@ -161,43 +167,36 @@ hook global WinCreate ^[^*]+$ %{editorconfig-load}
 # LSP
 
 # set global ui_options ncurses_assistant=cat
-set global ui_options ncurses_status_on_top=yes 
+# set global ui_options ncurses_status_on_top=yes 
 
-map global normal '#' ga
 # Dvorak
-map global normal l s
-map global normal s l
-map global normal n k
-map global normal k n
-map global normal t j
-map global normal j t
 
-map global normal <s-l> <s-s>
-map global normal <s-s> <s-l>
-map global normal <s-n> <s-k>
-map global normal <s-k> <s-n>
-map global normal <s-t> <s-j>
-map global normal <s-j> <s-t>
+declare-option -docstring "Filepath to the kak file that defines the current keymap" str keymap 
+declare-option -docstring "Name of the current keymap" str keymap_name
+declare-option -docstring "Name of the default keymap" str keymap_default_name
+set global keymap_default_name "Qwerty"
 
-map global normal <a-l> <a-s>
-map global normal <a-L> <a-S>
-map global normal <a-s> <a-l>
-map global normal <a-n> <a-k>
-map global normal <a-k> <a-n>
+define-command -params 1 -shell-script-candidates %{
+    ls "$kak_config/keymaps/" | grep '\.kak$' | perl -pe 's/^(.*)\.kak$/\1/'
+} keymap %{
+    # Disable previous keymap
+    try %sh{
+        cat "$kak_opt_keymap" | sed -e 's/^map/unmap/' -e 's/ -docstring .*//'  
+    }
+    set global keymap ""
+    set global keymap_name "%opt{keymap_default_name}"
 
-map global normal <c-l> <c-s>
-map global normal <c-s> <c-l>
-map global normal <c-n> <c-k>
-map global normal <c-k> <c-n>
-# map global normal <c-t> <c-j>
-map global normal <c-j> <c-t>
+    set global keymap "%val{config}/keymaps/%arg{1}.kak"
+    source "%opt{keymap}"
+}
 
-map global goto s l -docstring "line end"
-map global goto n k -docstring "buffer top"
-map global goto t j -docstring "buffer bottom"
+keymap dvorak
+
+set-option global modelinefmt "%opt{modelinefmt}   %%opt{keymap_name}"
 
 hook global InsertChar \n %[ try %[ exec -draft k<a-x> <a-k>[{(]\h*$<ret> j<a-gt> ] ]
-hook global InsertChar \n %{ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P  }
+hook global InsertChar \n %{ try %[ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P ]}
+
 set global tabstop 4                                                        
 set global indentwidth 4
 
@@ -210,5 +209,6 @@ map global spell l '<space><a-i>w:spell-add<ret>'     -docstring "Learn spelling
 map global spell n ':spell-next<ret>'                 -docstring "Next"
 map global spell r ':spell en-GB<ret>'                -docstring "Refresh"
 map global spell c ':spell-clear<ret>'                -docstring "Clear"
-map global goto  g ':spell-next<ret>'                 -docstring "next misspelling"
+map global goto  G ':spell-next<ret>'                 -docstring "next misspelling"
+
 

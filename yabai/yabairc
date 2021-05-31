@@ -13,24 +13,24 @@ yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 
 yabai -m config mouse_modifier fn
 yabai -m config mouse_follows_focus          on
-yabai -m config focus_follows_mouse          autofocus
+yabai -m config focus_follows_mouse          off
 
-yabai -m config top_padding    10
-yabai -m config bottom_padding 10
-yabai -m config left_padding   10
-yabai -m config right_padding  10
-yabai -m config window_gap     12
+yabai -m config top_padding    4
+yabai -m config bottom_padding 4
+yabai -m config left_padding   4
+yabai -m config right_padding  4
+yabai -m config window_gap     6
 
 yabai -m config window_opacity on
 yabai -m config active_window_opacity 1.0
 yabai -m config normal_window_opacity 0.7
-yabai -m config window_opacity_duration 0.7
 
 
 # float system preferences
-yabai -m rule --add app="*" native-fullscreen=off
+yabai -m rule --add app="^.*\$" native-fullscreen=off
 # float system preferences
 yabai -m rule --add app="^System Preferences\$" manage=off
+yabai -m rule --add app="^Firefox$" title="^Отваряне на .*$" manage=off
 
 # show digital colour meter topmost and on all spaces
 yabai -m rule --add app="^Digital Colou?r Meter\$" sticky=on
