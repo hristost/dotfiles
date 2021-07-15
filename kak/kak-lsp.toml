@@ -11,7 +11,17 @@ args = ["--lsp"]
 filetypes = ["swift"]
 roots = ["Package.swift", "Podfile"]
 command = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
+args = ["--log-level", "debug"]
 
+[language.objective-c]
+filetypes = ["m", "h"]
+roots = ["compile_commands.json"]
+command = "ccls"
+# Disable additional information in autocompletion menus that Kakoune inserts into the buffer until https://github.com/ul/kak-lsp/issues/40 gets fixed
+args = ["--init={\"completion\":{\"detailedLabel\":false}}"]
+
+snippet_support = true
+verbosity = 2
 [language.c_cpp]
 filetypes = ["c", "cpp"]
 roots = ["compile_commands.json", ".clangd"]

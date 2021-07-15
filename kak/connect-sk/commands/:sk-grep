@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# fzf
+# https://github.com/junegunn/fzf
+
+# Dependencies:
+# – ripgrep (https://github.com/BurntSushi/ripgrep)
+
+rg --color=always --column --with-filename '.+' "$@" |
+sk --ansi --prompt='(g)>' |
+:edit-search

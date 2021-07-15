@@ -7,7 +7,7 @@ plug "ul/kak-lsp" do %{
     # cargo install --force --path .
 } config %{
     set global lsp_cmd "kak-lsp -s %val{session} --config %val{config}/kak-lsp.toml"
-    #set global lsp_cmd "%opt{lsp_cmd} -vvv --log /tmp/kak-lsp.log"
+    set global lsp_cmd "%opt{lsp_cmd} -vvv --log /tmp/kak-lsp.log"
 
     set global lsp_diagnostic_line_error_sign ''
     set global lsp_diagnostic_line_warning_sign ''
@@ -21,7 +21,7 @@ plug "ul/kak-lsp" do %{
 
 
     define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
-    hook global WinSetOption filetype=(swift|c|cpp|cc|rust|javascript|typescript|latex) %{
+    hook global WinSetOption filetype=(swift|objc|c|cpp|cc|rust|javascript|typescript|latex) %{
         set-option window lsp_auto_highlight_references true
         set-option window lsp_hover_anchor false
         lsp-inlay-diagnostics-enable window
@@ -44,6 +44,8 @@ plug "alexherbo2/pager.kak"
 plug "alexherbo2/connect.kak" config %{
     require-module connect
     require-module connect-fzf
+    source "%val{config}/connect-sk/sk.kak"
+    require-module connect-sk
     require-module connect-nnn
     map global normal <c-t> ': connect-terminal<ret>'
 }
@@ -51,15 +53,14 @@ plug "alexherbo2/explore.kak" %{
     require-module explore-files
 
     # Explore files and buffers with fzf
-    alias global explore-files fzf-files
+    alias global explore-files sk-files
     alias global explore-buffers fzf-buffers
-    map -docstring 'fzf' global normal '<c-p>' ': fzf-files<ret>'
+    map -docstring 'fzf' global normal '<c-p>' ': sk-files<ret>'
     map -docstring 'fzf' global normal '<c-f>' ': fzf-grep<ret>'
 
     explore-files-enable
 }
 
-plug "delapouite/kakoune-registers" demand
 plug 'delapouite/kakoune-buffers' %{
     hook global WinDisplay .* info-buffers
 
@@ -72,10 +73,10 @@ plug 'delapouite/kakoune-buffers' %{
     alias global bo buffer-only
     alias global bo! buffer-only-force
 }
+plug 'https://gitlab.com/Screwtapello/kakoune-mark-show' demand
 plug "JJK96/kakoune-rainbow" demand
 plug "insipx/kak-crosshairs" demand
 plug "occivink/kakoune-roguelight" demand
-plug "Delapouite/kakoune-colors" theme
 plug "evanrelf/primer.kak" theme %{ colorscheme primer }
 #plug "coder5506/shirotelin-kakoune" theme %{
 #    colorscheme shirotelin
@@ -108,12 +109,13 @@ plug "evanrelf/primer.kak" theme %{ colorscheme primer }
 #    face global BufferPadding rgb:00005f,default
 #
 #}
-colorscheme spaceduck
 plug "raiguard/one.kak" theme
+plug "Icantjuddle/ayu-kak" theme
 plug 'delapouite/kakoune-palette'
 #plug "caksoylar/kakoune-mysticaltutor" theme %{ colorscheme mysticaltutor }
 #plug "caksoylar/kakoune-snow" theme %{ colorscheme snow-dark }  # or snow-dark
 #plug "nesyamun/nord-kakoune" theme %{ colorscheme nord }
+colorscheme ayu-mirage
 
 plug "andreyorst/smarttab.kak" defer smarttab %{
     # when `backspace' is pressed:, 4 spaces are deleted at once
@@ -150,8 +152,6 @@ hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor 
 #hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor -separator ' ⎹ ' -cursor-separator '  ' }
 hook global WinCreate ^[^*]+$ %{ add-highlighter window/ show-matching }
 
-set-option global ui_options ncurses_padding_fill=yes
-set-option -add global ui_options ncurses_padding_char=╱ # More fancy examples: ▚ ╳ ╱ ┼
 
 hook global RegisterModified '/' %{ add-highlighter -override global/search regex "%reg{/}" 0:+b }
 
@@ -166,7 +166,7 @@ hook global WinCreate ^[^*]+$ %{editorconfig-load}
 
 # LSP
 
-# set global ui_options ncurses_assistant=cat
+set global ui_options ncurses_assistant=duck
 # set global ui_options ncurses_status_on_top=yes 
 
 # Dvorak
@@ -200,6 +200,8 @@ hook global InsertChar \n %{ try %[ exec -draft k<a-x> s^\h+/*\h*<ret>y j<a-h>P 
 set global tabstop 4                                                        
 set global indentwidth 4
 
+map global normal ( ': buffer-previous<ret>'
+map global normal ) ': buffer-next<ret>'
 # Spelling
 declare-user-mode spell
 map global user -docstring "Enable spell keymap mode for next key" <ret> ": enter-user-mode<space>spell<ret>"
@@ -212,3 +214,5 @@ map global spell c ':spell-clear<ret>'                -docstring "Clear"
 map global goto  G ':spell-next<ret>'                 -docstring "next misspelling"
 
 
+set-option -add global ui_options ncurses_padding_fill=yes
+set-option -add global ui_options ncurses_padding_char=╱ # More fancy examples: ▚ ╳ ╱ ┼

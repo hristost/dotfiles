@@ -18,7 +18,6 @@
     
 [diff "swift"]
 	xfuncname = ^\\s*(.*(func \\w|subscript\\(|init\\??\\(|deinit |class \\w|struct \\w|protocol \\w|extension \\w)[^{]*[{])
-	#xfuncname = ^\\s*(.*(func \\w|subscript\\(|init\\??\\(|deinit |class \\w|struct \\w|protocol \\w|extension \\w).*)$
 
 [user]
 	name = hss
@@ -31,7 +30,7 @@
 	clean = git-lfs clean -- %f
 
 [delta]
-    side-by-side = true
+    side-by-side = false
     theme = Github
     theme = base16
     #light = true
@@ -62,5 +61,4 @@
 	cursor = white color0 bold
 	title-focus = black color6 bold
 	title-blur  = default default
-	
 	
